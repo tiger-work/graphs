@@ -1,0 +1,48 @@
+{
+    "properties": {},
+    "description": "",
+    "processes": {
+        "terminal1": {
+            "component": "com.sap.util.terminal",
+            "metadata": {
+                "label": "Terminal",
+                "x": 625,
+                "y": 227,
+                "height": 80,
+                "width": 120,
+                "ui": "dynpath",
+                "config": {}
+            }
+        },
+        "wiretap1": {
+            "component": "com.sap.util.wiretap",
+            "metadata": {
+                "label": "Wiretap",
+                "x": 943,
+                "y": 258,
+                "height": 80,
+                "width": 120,
+                "ui": "dynpath",
+                "config": {}
+            }
+        }
+    },
+    "groups": [],
+    "connections": [
+        {
+            "metadata": {
+                "points": "749,267 843.5,267 843.5,298 938,298"
+            },
+            "src": {
+                "port": "out1",
+                "process": "terminal1"
+            },
+            "tgt": {
+                "port": "in",
+                "process": "wiretap1"
+            }
+        }
+    ],
+    "inports": {},
+    "outports": {}
+}

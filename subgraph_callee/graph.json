@@ -1,0 +1,116 @@
+{
+    "properties": {},
+    "description": "subgraph_callee",
+    "processes": {
+        "12multiplexer1": {
+            "component": "com.sap.system.multiplexer.1-2",
+            "metadata": {
+                "label": "1:2 Multiplexer",
+                "x": 254,
+                "y": 46,
+                "height": 80,
+                "width": 120,
+                "extensible": true,
+                "config": {}
+            }
+        },
+        "python3operator1": {
+            "component": "com.sap.system.python3Operator",
+            "metadata": {
+                "label": "Simulate Kafka",
+                "x": 85,
+                "y": 46,
+                "height": 80,
+                "width": 120,
+                "extensible": true,
+                "config": {
+                    "script": "import time\n\ncounter = int(api.config.resume_parameter)\n\ndef on_input(data):\n    global counter\n    for i in range(int(api.config.resume_parameter), 20):\n        api.send(\"output\", str(counter))\n        counter += 1\n        time.sleep(10)\n\napi.set_port_callback(\"input\", on_input)",
+                    "resume_parameter": "${resume_parameter}"
+                },
+                "additionalinports": [
+                    {
+                        "name": "input",
+                        "type": "string"
+                    }
+                ],
+                "additionaloutports": [
+                    {
+                        "name": "output",
+                        "type": "string"
+                    }
+                ]
+            }
+        },
+        "python3operator2": {
+            "component": "com.sap.system.python3Operator",
+            "metadata": {
+                "label": "Log Consumed",
+                "x": 438.9999990463257,
+                "y": 80,
+                "height": 80,
+                "width": 120,
+                "extensible": true,
+                "config": {
+                    "script": "import json\n\ndef on_input(data):\n    log_path = \"/vrep/vflow/tmp/kafka-logs/log.json\"\n    \n    with open(log_path, \"r\") as f:\n        json_file = json.load(f)\n\n        json_obj = json.loads('{\"' + str(data) + '\": 0}')\n        json_file.update(json_obj)\n\n    with open(log_path, \"w\") as f:\n        json.dump(json_file, f)\n\napi.set_port_callback(\"input\", on_input)"
+                },
+                "additionalinports": [
+                    {
+                        "name": "input",
+                        "type": "string"
+                    }
+                ]
+            }
+        }
+    },
+    "groups": [],
+    "connections": [
+        {
+            "metadata": {
+                "points": "209,86 249,86"
+            },
+            "src": {
+                "port": "output",
+                "process": "python3operator1"
+            },
+            "tgt": {
+                "port": "in1",
+                "process": "12multiplexer1"
+            }
+        },
+        {
+            "metadata": {
+                "points": "378,95 405.99999952316284,95 405.99999952316284,120 433.9999990463257,120"
+            },
+            "src": {
+                "port": "out2",
+                "process": "12multiplexer1"
+            },
+            "tgt": {
+                "port": "input",
+                "process": "python3operator2"
+            }
+        }
+    ],
+    "inports": {
+        "input": {
+            "port": "input",
+            "process": "python3operator1",
+            "metadata": {
+                "x": 12,
+                "y": 72,
+                "points": "40,86 80,86"
+            }
+        }
+    },
+    "outports": {
+        "output": {
+            "port": "out1",
+            "process": "12multiplexer1",
+            "metadata": {
+                "x": 438.9999990463257,
+                "y": 12,
+                "points": "378,77 405.99999952316284,77 405.99999952316284,26 438.9999990463257,26"
+            }
+        }
+    }
+}
